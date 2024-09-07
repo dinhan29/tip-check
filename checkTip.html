@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tip Checker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            font-size: 24px;
+            color: #333;
+        }
+        p {
+            font-size: 18px;
+            color: #666;
+        }
+        .note-time {
+            display: inline;
+            color: red;
+        }
+        .note-date-default {
+            font-size: small;
+            opacity: 0.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Hôm nay nên dùng típ nào?</h1>
+        <p id="tipType">Đang tính toán...</p>
+        <p id="currentTime">Thời gian hiện tại: </p>
+    </div>
+<script>
+    function getTipType() {
+        // Ngày bắt đầu (2024/9/1)
+        const startDate = new Date(2024, 8, 1); // Lưu ý: tháng trong JS bắt đầu từ 0, nên tháng 9 là 8
+        const today = new Date(2024, 8, 2, 1, 30); // Ngày hiện tại
+        const currentTime = today.toLocaleString();
+        let isAdjusted = false;
+        let originalTipType;
+
+        // Nếu thời gian hiện tại là từ 0h đến 2h, lấy típ của ngày hôm trước
+        if (today.getHours() >= 0 && today.getHours() < 2) {
+            today.setDate(today.getDate() - 1); // Trừ một ngày
+            isAdjusted = true;
+        }
+
+        // Tính số ngày đã qua kể từ ngày bắt đầu
+        const timeDifference = today - startDate;
+        const daysPassed = Math.floor(timeDifference / (1000 * 60 * 60 * 24)); // Chuyển đổi từ milliseconds sang ngày
+
+        // Tính típ gốc
+        if (isAdjusted) {
+            const todayDefault = new Date(2024, 8, 2);
+            const timeDifferenceDefault = todayDefault - startDate;
+            const daysPassedDefault = Math.floor(timeDifferenceDefault / (1000 * 60 * 60 * 24)); // Chuyển đổi từ milliseconds sang ngày
+            originalTipType = daysPassedDefault % 2 === 0 ? "Típ 1" : "Típ 2";
+        }
+
+        // Kiểm tra nếu số ngày chẵn thì là típ 1, nếu lẻ thì là típ 2
+        const tipType = daysPassed % 2 === 0 ? "Típ 1" : "Típ 2";
+
+        // Trả về mảng chứa kết quả típ và thời gian hiện tại dưới dạng chuỗi
+        return [tipType, currentTime, isAdjusted, originalTipType];
+    }
+
+    const [tipType, currentTime, isAdjusted, originalTipType] = getTipType();
+
+    if (isAdjusted) {
+        document.getElementById("tipType").innerHTML = `Vì hiện tại là <p class="note-time" style="">0h 〜 2h</p> nên dùng ${tipType} </br> <p class="note-date-default">(Thực tế: ${originalTipType})</p> `;
+    } else {
+        document.getElementById("tipType").textContent = tipType;
+    }
+
+    document.getElementById("currentTime").textContent = "Thời gian hiện tại: " + currentTime;
+</script>
+
+</body>
+</html>
